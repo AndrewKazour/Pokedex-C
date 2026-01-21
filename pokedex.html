@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanto Pokédex</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            height: 100%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .controls {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .search-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        input, button {
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            background: #f0f0f0;
+        }
+
+        .filter-btn.active {
+            background: #764ba2;
+            color: white;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .pokemon-list {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .pokemon-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pokemon-item:hover {
+            background: #f5f5f5;
+        }
+
+        .pokemon-item.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        .pokemon-details {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #333;
+        }
+
+        .pokemon-name {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .type-badges {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .type-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .stats-section {
+            margin: 20px 0;
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            width: 120px;
+            font-weight: bold;
+        }
+
+        .stat-value {
+            width: 40px;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .stat-bar-bg {
+            flex: 1;
+            background: #e0e0e0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4);
+            transition: width 0.3s;
+        }
+
+        .abilities, .description {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔴 KANTO POKÉDEX</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar">0%</div>
+            </div>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="seenCount">0</div>
+                    <div>Seen</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="caughtCount">0</div>
+                    <div>Caught</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">151</div>
+                    <div>Total</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-section">
+                <input type="text" id="searchInput" placeholder="Search by name or ID...">
+                <button onclick="searchPokemon()">Search</button>
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterList('all')">All</button>
+                <button class="filter-btn" onclick="filterList('caught')">Caught</button>
+                <button class="filter-btn" onclick="filterList('seen')">Seen</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="pokemon-list" id="pokemonList">
+                <div class="empty-state">Loading...</div>
+            </div>
+
+            <div class="pokemon-details" id="pokemonDetails">
+                <div class="empty-state">
+                    <p>👈 Select a Pokémon to view details</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        let currentFilter = 'all';
+        let selectedPokemon = null;
+
+        const typeColors = {
+            normal: '#A8A878', fighting: '#C03028', flying: '#A890F0',
+            poison: '#A040A0', ground: '#E0C068', rock: '#B8A038',
+            bug: '#A8B820', ghost: '#705898', steel: '#B8B8D0',
+            fire: '#F08030', water: '#6890F0', grass: '#78C850',
+            electric: '#F8D030', psychic: '#F85888', ice: '#98D8D8',
+            dragon: '#7038F8', dark: '#705848', fairy: '#EE99AC'
+        };
+
+        async function loadProgress() {
+            try {
+                const response = await fetch(`${API_BASE}/progress`);
+                const data = await response.json();
+                
+                document.getElementById('seenCount').textContent = data.total_seen;
+                document.getElementById('caughtCount').textContent = data.total_caught;
+                
+                const percentage = ((data.total_caught / 151) * 100).toFixed(1);
+                const progressBar = document.getElementById('progressBar');
+                progressBar.style.width = percentage + '%';
+                progressBar.textContent = percentage + '%';
+            } catch (error) {
+                console.error('Error loading progress:', error);
+            }
+        }
+
+        async function loadPokemonList() {
+            try {
+                const filter = currentFilter === 'all' ? '' : `?filter=${currentFilter}`;
+                const response = await fetch(`${API_BASE}/list${filter}`);
+                const pokemon = await response.json();
+                
+                const list = document.getElementById('pokemonList');
+                list.innerHTML = '';
+                
+                pokemon.forEach(p => {
+                    const item = document.createElement('div');
+                    item.className = 'pokemon-item';
+                    item.onclick = () => loadPokemonDetails(p.id);
+                    
+                    const status = p.caught ? '*' : (p.encountered ? 'o' : '-');
+                    const id = String(p.id).padStart(3, '0');
+                    
+                    item.innerHTML = `
+                        <span style="width: 20px; font-weight: bold">${status}</span>
+                        <span><strong>#${id}</strong></span>
+                        <span>${p.name}</span>
+                    `;
+                    
+                    list.appendChild(item);
+                });
+            } catch (error) {
+                console.error('Error loading Pokemon list:', error);
+            }
+        }
+
+        async function searchPokemon() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+            
+            try {
+                const isId = !isNaN(query);
+                const param = isId ? `id=${query}` : `q=${encodeURIComponent(query)}`;
+                const response = await fetch(`${API_BASE}/search?${param}`);
+                
+                if (response.ok) {
+                    const pokemon = await response.json();
+                    loadPokemonDetails(pokemon.id);
+                } else {
+                    alert('Pokémon not found!');
+                }
+            } catch (error) {
+                console.error('Error searching:', error);
+                alert('Error searching for Pokémon');
+            }
+        }
+
+        async function loadPokemonDetails(id) {
+            try {
+                const response = await fetch(`${API_BASE}/search?id=${id}`);
+                const pokemon = await response.json();
+                selectedPokemon = pokemon;
+                
+                const details = document.getElementById('pokemonDetails');
+                
+                const type1Color = typeColors[pokemon.type1.toLowerCase()] || '#777';
+                const type2Badge = pokemon.type2 ? 
+                    `<span class="type-badge" style="background: ${typeColors[pokemon.type2.toLowerCase()] || '#777'}">${pokemon.type2}</span>` : '';
+                
+                const status = pokemon.caught ? '*' : (pokemon.encountered ? 'o' : '-');
+                
+                details.innerHTML = `
+                    <div class="detail-header">
+                        <div>
+                            <div class="pokemon-name">${pokemon.name}</div>
+                            <div style="color: #666">#${String(pokemon.id).padStart(3, '0')}</div>
+                        </div>
+                        <div style="font-size: 2em; font-weight: bold">${status}</div>
+                    </div>
+
+                    <div class="type-badges">
+                        <span class="type-badge" style="background: ${type1Color}">${pokemon.type1}</span>
+                        ${type2Badge}
+                    </div>
+
+                    <div class="stats-section">
+                        <h3>Base Stats</h3>
+                        ${createStatBar('HP', pokemon.hp)}
+                        ${createStatBar('Attack', pokemon.attack)}
+                        ${createStatBar('Defense', pokemon.defense)}
+                        ${createStatBar('Sp. Atk', pokemon.sp_attack)}
+                        ${createStatBar('Sp. Def', pokemon.sp_defense)}
+                        ${createStatBar('Speed', pokemon.speed)}
+                    </div>
+
+                    <div class="abilities">
+                        <h3>Abilities</h3>
+                        <p>- ${pokemon.ability1}</p>
+                        ${pokemon.ability2 ? `<p>- ${pokemon.ability2}</p>` : ''}
+                    </div>
+
+                    <div class="description">
+                        <h3>Description</h3>
+                        <p>${pokemon.description}</p>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="markEncountered()" 
+                                ${pokemon.encountered ? 'disabled' : ''}>
+                            Mark as Seen
+                        </button>
+                        <button class="action-btn" onclick="markCaught()"
+                                ${pokemon.caught ? 'disabled' : ''}>
+                            Mark as Caught
+                        </button>
+                    </div>
+                `;
+                
+                // Highlight in list
+                document.querySelectorAll('.pokemon-item').forEach(item => {
+                    item.classList.remove('selected');
+                    if (item.textContent.includes(`#${String(id).padStart(3, '0')}`)) {
+                        item.classList.add('selected');
+                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading Pokemon details:', error);
+            }
+        }
+
+        function createStatBar(label, value) {
+            const percentage = (value / 255) * 100;
+            return `
+                <div class="stat-row">
+                    <div class="stat-label">${label}</div>
+                    <div class="stat-value">${value}</div>
+                    <div class="stat-bar-bg">
+                        <div class="stat-bar-fill" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function markEncountered() {
+            if (!selectedPokemon) return;
+            
+            try {
+                await fetch(`${API_BASE}/encounter?id=${selectedPokemon.id}`, { method: 'POST' });
+                await loadProgress();
+                await loadPokemonList();
+                await loadPokemonDetails(selectedPokemon.id);
+            } catch (error) {
+                console.error('Error marking encountered:', error);
+            }
+        }
+
+        async function markCaught() {
+            if (!selectedPokemon) return;
+            
+            try {
+                await fetch(`${API_BASE}/catch?id=${selectedPokemon.id}`, { method: 'POST' });
+                await loadProgress();
+                await loadPokemonList();
+                await loadPokemonDetails(selectedPokemon.id);
+            } catch (error) {
+                console.error('Error marking caught:', error);
+            }
+        }
+
+        function filterList(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            loadPokemonList();
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchPokemon();
+            }
+        });
+
+        // Initialize
+        loadProgress();
+        loadPokemonList();
+    </script>
+</body>
+</html>
