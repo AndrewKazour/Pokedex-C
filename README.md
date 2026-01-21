@@ -1,9 +1,7 @@
-# 🔴 Pokedex-C
+# Pokedex-C
 
 A Pokedex web application written in C, featuring all 151 original Pokemon with a built-in HTTP server.
 
-![C](https://img.shields.io/badge/Language-C-blue)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey)
 
 ---
 
